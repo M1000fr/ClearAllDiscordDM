@@ -130,9 +130,6 @@ async function main() {
 			// Delete the message
 			await deleteMessage(channelData.id, message.ID)
 				.then(async () => {
-					// Incrémenter totalDeleted lorsqu'un message est supprimé avec succès
-					totalDeleted++;
-
 					messagesDeletedFile.push({
 						channel_id: channelData.id,
 						message_id: message.ID,
@@ -164,6 +161,8 @@ async function main() {
 						);
 					}
 				});
+
+			totalDeleted++;
 
 			// Don't spam the API
 			await wait(secondsDelay * 1000);
