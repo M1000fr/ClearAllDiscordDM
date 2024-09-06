@@ -1,5 +1,5 @@
 export interface MessageData {
-	ID: string;
+	ID: bigint;
 	Timestamp: string;
 	Contents: string;
 	Attachments: string;

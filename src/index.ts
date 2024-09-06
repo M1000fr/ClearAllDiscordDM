@@ -4,9 +4,18 @@ import { ChannelData } from "./interfaces/channelData";
 import { MessageData } from "./interfaces/messageData";
 import { MessageDeleteData } from "./interfaces/messageDeleteData";
 import moment from "moment";
+import "json-bigint-patch";
 
 const secondsDelay = 2,
 	token = process.argv[2];
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+let totalMessages = 0,
+	totalDeleted = 0;
+
+const CHANNELS_DATA: ChannelData[] = [],
+	MESSAGES_DATA: { [key: string]: MessageData[] } = {};
 
 function getUserIdFromToken(token: string): string {
 	const tokenParts = token.split(".");
@@ -30,19 +39,13 @@ const axiosInstance = axios.create({
 	},
 });
 
-const deleteMessage = async (channelId: string, messageId: string) => {
+const deleteMessage = async (channelId: string, messageId: bigint) => {
+	console.log(messageId.toString());
+
 	return await axiosInstance.delete(
-		`/channels/${channelId}/messages/${messageId}`
+		`/channels/${channelId}/messages/${messageId.toString()}`
 	);
 };
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-let totalMessages = 0,
-	totalDeleted = 0;
-
-const CHANNELS_DATA: ChannelData[] = [],
-	MESSAGES_DATA: { [key: string]: MessageData[] } = {};
 
 async function main() {
 	const myId = getUserIdFromToken(token);
@@ -86,6 +89,8 @@ async function main() {
 		// get messagesDeleted.json and filter to get only messages not deleted
 		const messages: MessageData[] = JSON.parse(messagesData.toString());
 		totalMessages += messages.length;
+
+		console.log(messages);
 
 		CHANNELS_DATA.push(channelData);
 		MESSAGES_DATA[channelData.id] = JSON.parse(messagesData.toString());
