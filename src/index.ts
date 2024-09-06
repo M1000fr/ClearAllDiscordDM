@@ -40,8 +40,6 @@ const axiosInstance = axios.create({
 });
 
 const deleteMessage = async (channelId: string, messageId: bigint) => {
-	console.log(messageId.toString());
-
 	return await axiosInstance.delete(
 		`/channels/${channelId}/messages/${messageId.toString()}`
 	);
@@ -89,8 +87,6 @@ async function main() {
 		// get messagesDeleted.json and filter to get only messages not deleted
 		const messages: MessageData[] = JSON.parse(messagesData.toString());
 		totalMessages += messages.length;
-
-		console.log(messages);
 
 		CHANNELS_DATA.push(channelData);
 		MESSAGES_DATA[channelData.id] = JSON.parse(messagesData.toString());
