@@ -39,9 +39,7 @@ const axiosInstance = axios.create({
 });
 
 const deleteMessage = async (channelId: string, messageId: bigint) => {
-	return await axiosInstance.delete(
-		`/channels/${channelId}/messages/${messageId.toString()}`
-	);
+	return await axiosInstance.delete(`/channels/${channelId}/messages/${messageId.toString()}`);
 };
 
 async function main() {
@@ -52,9 +50,7 @@ async function main() {
 
 	// Loop through all the folders in the messages directory to calculate the total number of messages
 	for (const channelFolder of channelsFolder) {
-		const channelDataFile = await fs
-			.readFile(`./messages/${channelFolder}/channel.json`)
-			.catch(() => null);
+		const channelDataFile = await fs.readFile(`./messages/${channelFolder}/channel.json`).catch(() => null);
 		if (!channelDataFile) continue;
 
 		// check if it's a DM
@@ -66,9 +62,7 @@ async function main() {
 		if (destinataireId == "Deleted User") continue;
 
 		// get messages.json
-		const messagesData = await fs
-			.readFile(`./messages/${channelFolder}/messages.json`)
-			.catch(() => null);
+		const messagesData = await fs.readFile(`./messages/${channelFolder}/messages.json`).catch(() => null);
 		if (!messagesData) continue;
 
 		// get messagesDeleted.json and filter to get only messages not deleted
@@ -78,9 +72,7 @@ async function main() {
 		CHANNELS_DATA.push(channelData);
 		MESSAGES_DATA[channelData.id] = JSON.parse(messagesData.toString());
 
-		totalDeleted += messages.filter(
-			(message) => message?.Deleted == true
-		).length;
+		totalDeleted += messages.filter((message) => message?.Deleted == true).length;
 	}
 
 	// Loop through all the folders in the messages directory to delete the messages
@@ -92,25 +84,24 @@ async function main() {
 		if (destinataireId == "Deleted User") continue;
 
 		// get messagesDeleted.json and filter to get only messages not deleted
-		const messages: MessageData[] = MESSAGES_DATA[channelData.id],
-			messagesNotDeleted = messages.filter((message) => {
+		const channelMessages: MessageData[] = MESSAGES_DATA[channelData.id],
+			messagesNotDeleted = channelMessages.filter((message) => {
 				return !message.Deleted;
 			});
 
 		for (const message of messagesNotDeleted) {
-			const totalPourcentage = (
-				(totalDeleted / totalMessages) *
-				100
-			).toFixed(2);
+			const totalChannelDeletedMessages: number = channelMessages.filter((message) => message.Deleted).length;
+			const totalChannelMessages: number = channelMessages.length;
+			const channelTotalPourcentage: string = ((totalChannelDeletedMessages / totalChannelMessages) * 100).toFixed(2);
+			const channelTotalTimeReamining: number = (channelMessages.length - channelMessages.filter((message) => message.Deleted).length) * secondsDelay;
 
-			const timeReamining = (totalMessages - totalDeleted) * secondsDelay;
+			const totalPourcentage: string = ((totalDeleted / totalMessages) * 100).toFixed(2);
+			const totalTimeReamining: number = (totalMessages - totalDeleted) * secondsDelay;
 
 			console.log(
-				`Deleting message ${message.ID} in channel ${
-					channelData.id
-				} with ${destinataireId} (${totalDeleted}/${totalMessages} - ${totalPourcentage}%) - ${moment
-					.duration(timeReamining, "seconds")
-					.humanize()} remaining`
+				`Deleting message ${message.ID} in channel ${channelData.id} with user ${destinataireId}
+- Channel: ${channelMessages.filter((message) => message.Deleted).length}/${channelMessages.length} - ${channelTotalPourcentage}% - ${moment.duration(channelTotalTimeReamining, "seconds").humanize()} remaining
+- Total: ${totalDeleted}/${totalMessages} - ${totalPourcentage}% - ${moment.duration(totalTimeReamining, "seconds").humanize()} remaining`
 			);
 
 			// Delete the message
@@ -118,29 +109,17 @@ async function main() {
 				.then(async () => {
 					// Update the message data
 					message.Deleted = true;
-					await fs.writeFile(
-						`./messages/c${channelData.id}/messages.json`,
-						JSON.stringify(messages, null, 2)
-					);
+					await fs.writeFile(`./messages/c${channelData.id}/messages.json`, JSON.stringify(channelMessages, null, 2));
 				})
 				.catch(async (error) => {
-					const errorMessage = (error as any)?.response?.data
-						?.message as string;
+					const errorMessage = (error as any)?.response?.data?.message as string;
 
 					console.error(errorMessage);
 
-					if (
-						errorMessage &&
-						["Message inconnu", "message système"].some((msg) =>
-							errorMessage?.includes(msg)
-						)
-					) {
+					if (errorMessage && ["Message inconnu", "message système"].some((msg) => errorMessage?.includes(msg))) {
 						// Update the message data
 						message.Deleted = true;
-						await fs.writeFile(
-							`./messages/c${channelData.id}/messages.json`,
-							JSON.stringify(messages, null, 1)
-						);
+						await fs.writeFile(`./messages/c${channelData.id}/messages.json`, JSON.stringify(channelMessages, null, 1));
 					}
 				});
 
@@ -150,9 +129,7 @@ async function main() {
 			await wait(secondsDelay * 1000);
 		}
 
-		console.log(
-			`Finished deleting messages in channel ${channelData.id} with ${destinataireId}`
-		);
+		console.log(`Finished deleting messages in channel ${channelData.id} with ${destinataireId}`);
 	}
 
 	// Log the totals
