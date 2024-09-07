@@ -59,7 +59,12 @@ yarn install
 │   └── index.json
 ```
 
-5. Run the script:
+5. Build
+```bash
+yarn build
+```
+
+6. Run the script:
 
 ```bash
 node . "UR_TOKEN"
