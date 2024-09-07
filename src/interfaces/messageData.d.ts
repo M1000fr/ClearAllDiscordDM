@@ -3,4 +3,5 @@ export interface MessageData {
 	Timestamp: string;
 	Contents: string;
 	Attachments: string;
+	Deleted?: boolean;
 }

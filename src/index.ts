@@ -2,7 +2,6 @@ import axios from "axios";
 import fs from "node:fs/promises";
 import { ChannelData } from "./interfaces/channelData";
 import { MessageData } from "./interfaces/messageData";
-import { MessageDeleteData } from "./interfaces/messageDeleteData";
 import moment from "moment";
 import "json-bigint-patch";
 
@@ -51,18 +50,6 @@ async function main() {
 
 	const channelsFolder = await fs.readdir("./messages");
 
-	// get messagesDeleted.json, if not exists, create it
-	var messagesDeletedFile: MessageDeleteData[] = await fs
-		.readFile("./messagesDeleted.json")
-		.catch(() => null)
-		.then((data) => data && JSON.parse(data.toString()));
-	if (!messagesDeletedFile) {
-		await fs.writeFile("./messagesDeleted.json", "[]");
-		messagesDeletedFile = [];
-	}
-
-	totalDeleted += messagesDeletedFile.length;
-
 	// Loop through all the folders in the messages directory to calculate the total number of messages
 	for (const channelFolder of channelsFolder) {
 		const channelDataFile = await fs
@@ -90,6 +77,10 @@ async function main() {
 
 		CHANNELS_DATA.push(channelData);
 		MESSAGES_DATA[channelData.id] = JSON.parse(messagesData.toString());
+
+		totalDeleted += messages.filter(
+			(message) => message?.Deleted == true
+		).length;
 	}
 
 	// Loop through all the folders in the messages directory to delete the messages
@@ -103,12 +94,7 @@ async function main() {
 		// get messagesDeleted.json and filter to get only messages not deleted
 		const messages: MessageData[] = MESSAGES_DATA[channelData.id],
 			messagesNotDeleted = messages.filter((message) => {
-				const messageDeleted = messagesDeletedFile.find(
-					(messageDeleted) =>
-						messageDeleted.channel_id === channelData.id &&
-						messageDeleted.message_id === message.ID
-				);
-				return !messageDeleted;
+				return !message.Deleted;
 			});
 
 		for (const message of messagesNotDeleted) {
@@ -130,13 +116,11 @@ async function main() {
 			// Delete the message
 			await deleteMessage(channelData.id, message.ID)
 				.then(async () => {
-					messagesDeletedFile.push({
-						channel_id: channelData.id,
-						message_id: message.ID,
-					});
+					// Update the message data
+					message.Deleted = true;
 					await fs.writeFile(
-						"./messagesDeleted.json",
-						JSON.stringify(messagesDeletedFile, null, 2)
+						`./messages/c${channelData.id}/messages.json`,
+						JSON.stringify(messages, null, 2)
 					);
 				})
 				.catch(async (error) => {
@@ -151,13 +135,11 @@ async function main() {
 							errorMessage?.includes(msg)
 						)
 					) {
-						messagesDeletedFile.push({
-							channel_id: channelData.id,
-							message_id: message.ID,
-						});
+						// Update the message data
+						message.Deleted = true;
 						await fs.writeFile(
-							"./messagesDeleted.json",
-							JSON.stringify(messagesDeletedFile, null, 2)
+							`./messages/c${channelData.id}/messages.json`,
+							JSON.stringify(messages, null, 1)
 						);
 					}
 				});
