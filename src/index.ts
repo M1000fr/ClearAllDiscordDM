@@ -66,7 +66,7 @@ async function main() {
 		const messagesData = await fs.readFile(`./messages/${channelFolder}/messages.json`).catch(() => null);
 		if (!messagesData) continue;
 
-		// get messagesDeleted.json and filter to get only messages not deleted
+		// get messages
 		const messages: MessageData[] = JSON.parse(messagesData.toString());
 		totalMessages += messages.length;
 
@@ -84,7 +84,7 @@ async function main() {
 		const destinataireId = channelData.recipients.find((id) => id !== myId);
 		if (destinataireId == "Deleted User") continue;
 
-		// get messagesDeleted.json and filter to get only messages not deleted
+		// get messages
 		const channelMessages: MessageData[] = MESSAGES_DATA[channelData.id],
 			messagesNotDeleted = channelMessages.filter((message) => {
 				return !message.Deleted;

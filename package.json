@@ -1,7 +1,7 @@
 {
 	"name": "clear-all-discord-dm",
 	"description": "Clear all discord DMs with a discord data request",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"main": "build/index.js",
 	"license": "MIT",
 	"dependencies": {
@@ -12,10 +12,13 @@
 		"typescript": "^5.5.4"
 	},
 	"devDependencies": {
-		"@types/node": "^22.5.4"
+		"@types/node": "^22.5.4",
+		"bun": "^1.1.27"
 	},
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"bun": "bun build --entry ./build/index.js --compile --outfile ./bin/ClearMessages",
+		"pipe": "npm run build && npm run bun"
 	},
 	"repository": {
 		"url": "https://github.com/M1000fr/ClearAllDiscordDM.git",
