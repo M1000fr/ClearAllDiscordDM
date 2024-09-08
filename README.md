@@ -19,17 +19,9 @@ C:\Users\M1000\Desktop\ClearMessages\imgs\3.png -->
 
 Once you receive and download your data, you will find a file containing all the messages you have sent, including their IDs. This file will be used by the script to delete your messages.
 
-## Setting Up the Project
+## Installation
 
-### Prerequisites
-
--   [Node.js](https://nodejs.org/en/) installed on your machine.
--   [Yarn](https://classic.yarnpkg.com/en/docs/install) installed to manage dependencies.
-    -   `npm i -g yarn`
-
-### Installation
-
-#### Using executable
+### Using executable
 
 1. Download the executable from the [releases page](https://github.com/M1000fr/ClearAllDiscordDM/releases).
 2. Extract the messages file from your Discord data request and place it in the same directory as the executable.
@@ -45,7 +37,11 @@ To show messages content
 .\ClearMessages.exe "UR_TOKEN" debug
 ```
 
-#### Using nodejs
+### Using nodejs
+
+-   [Node.js](https://nodejs.org/en/) installed on your machine.
+-   [Yarn](https://classic.yarnpkg.com/en/docs/install) installed to manage dependencies.
+    -   `npm i -g yarn`
 
 1. Clone this repository or download the project files to your machine:
 
