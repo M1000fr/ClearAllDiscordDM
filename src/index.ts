@@ -6,7 +6,8 @@ import moment from "moment";
 import "json-bigint-patch";
 
 const secondsDelay = 2,
-	token = process.argv[2];
+	token = process.argv[2],
+	debugMode = process.argv[3] == "debug";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -99,7 +100,7 @@ async function main() {
 			const totalTimeReamining: number = (totalMessages - totalDeleted) * secondsDelay;
 
 			console.log(
-				`Deleting message ${message.ID} in channel ${channelData.id} with user ${destinataireId}
+				`${debugMode ? `${message.Contents}\n` : ""}Deleting message ${message.ID} in channel ${channelData.id} with user ${destinataireId}
 - Channel: ${channelMessages.filter((message) => message.Deleted).length}/${channelMessages.length} - ${channelTotalPourcentage}% - ${moment.duration(channelTotalTimeReamining, "seconds").humanize()} remaining
 - Total: ${totalDeleted}/${totalMessages} - ${totalPourcentage}% - ${moment.duration(totalTimeReamining, "seconds").humanize()} remaining`
 			);

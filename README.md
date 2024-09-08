@@ -64,3 +64,9 @@ yarn install
 ```bash
 node . "UR_TOKEN"
 ```
+
+To show messages content
+
+```bash
+node . "UR_TOKEN" debug
+```
