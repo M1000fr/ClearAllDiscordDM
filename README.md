@@ -24,7 +24,7 @@ Once you receive and download your data, you will find a file containing all the
 ### Using executable
 
 1. Download the executable from the [releases page](https://github.com/M1000fr/ClearAllDiscordDM/releases).
-2. Extract the messages file from your Discord data request and place it in the same directory as the executable.
+2. Extract the messages file from your [Discord data request](#how-to-request-your-data-from-discord) and place it in the same directory as the executable.
 3. Run the executable with the following command:
 
 ```bash
