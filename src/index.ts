@@ -1,47 +1,21 @@
-import axios from "axios";
+import "json-bigint-patch";
+import moment from "moment";
 import fs from "node:fs/promises";
+import { deleteMessage } from "service/axios";
+import { getUserIdFromToken } from "utils/discordId";
+import { wait } from "utils/wait";
 import { ChannelData } from "./interfaces/channelData";
 import { MessageData } from "./interfaces/messageData";
-import moment from "moment";
-import "json-bigint-patch";
 
 const secondsDelay = 2,
 	token = process.argv[2],
 	debugMode = process.argv[3] == "debug";
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let totalMessages = 0,
 	totalDeleted = 0;
 
 const CHANNELS_DATA: ChannelData[] = [],
 	MESSAGES_DATA: { [key: string]: MessageData[] } = {};
-
-function getUserIdFromToken(token: string): string {
-	const tokenParts = token.split(".");
-	const payload = tokenParts[0];
-	return Buffer.from(payload, "base64").toString("utf-8");
-}
-
-const axiosInstance = axios.create({
-	baseURL: "https://discord.com/api/v9",
-	headers: {
-		authorization: token,
-		accept: "*/*",
-		"accept-language": "fr,fr-FR;q=0.9",
-		"content-type": "application/json",
-		"sec-ch-ua": '"Not;A Brand";v="99", "Chromium";v="90"',
-		"sec-ch-ua-mobile": "?0",
-		"sec-fetch-dest": "empty",
-		"sec-fetch-mode": "cors",
-		"sec-fetch-site": "same-origin",
-		"x-debug-options": "bugReporterEnabled",
-	},
-});
-
-const deleteMessage = async (channelId: string, messageId: bigint) => {
-	return await axiosInstance.delete(`/channels/${channelId}/messages/${messageId.toString()}`);
-};
 
 async function main() {
 	const myId = getUserIdFromToken(token);
