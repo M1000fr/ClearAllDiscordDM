@@ -1,8 +1,8 @@
 import "json-bigint-patch";
 import moment from "moment";
 import fs from "node:fs/promises";
-import { deleteMessage } from "service/axios";
-import { getUserIdFromToken } from "utils/discordId";
+import { deleteMessage } from "./service/axios";
+import { getUserIdFromToken } from "./utils/discordId";
 import { setTimeout as wait } from "node:timers/promises";
 import { ChannelData } from "./interfaces/channelData";
 import { MessageData } from "./interfaces/messageData";
