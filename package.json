@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.5.4",
-		"bun": "^1.1.27"
+		"bun": "^1.1.30"
 	},
 	"scripts": {
 		"build": "tsc",
